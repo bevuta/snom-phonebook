@@ -21,6 +21,9 @@ execute it with
 You need to have a configuration.clj staying in the directory from
 where you called `java -jar ...`.
 
+Leiningen is a tool for automating clojure projects.  To get it up and
+running, see https://github.com/technomancy/leiningen
+
 ## Handlers
 
 ### LdapHandler
