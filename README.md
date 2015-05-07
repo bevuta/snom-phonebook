@@ -1,28 +1,38 @@
 ﻿
-# Phonebook for Snom-phones
+# Phonebook for snom phones
 
 ## Purpose
 
-Backend for snom phones to query various data sources by using
-the minibrowser-feature. Expandable with own handler plugins.
+Backend for snom phones to query various data sources by using the
+minibrowser-feature. Expandable with own handler plugins. Licensed
+under a BSD-2-Clause License.
 
 ## Quick-Start
+
+To run this application, you need at least a JRE, or better an up and
+running leiningen installation. For information about running clojure
+projects, see https://github.com/technomancy/leiningen
+
+Copy the example-configuration.clj and make it fitting your needs.
+  cp example-configuration.clj configuration.clj
+  $EDITOR configuration.clj
 
 Run with
 `lein run`
 if you have installed leiningen.
 
-If you don't
-want to care about leiningen and clojure, use the provided jar and
-execute it with
+If you don't want to care about leiningen and clojure, use the
+provided jar and execute it with
 
 `java -jar snom-phonebook-0.1.0-SNAPSHOT-standalone.jar`
 
 You need to have a configuration.clj staying in the directory from
 where you called `java -jar ...`.
 
-Leiningen is a tool for automating clojure projects.  To get it up and
-running, see https://github.com/technomancy/leiningen
+To configure your snom phone to make it use of this application, see
+http://wiki.snom.com/Category:HowTo:Minibrowser#Keypad-_Triggered and
+put in the input field whatever you putted in your configuration as
+*base-url*.
 
 ## Handlers
 
@@ -40,8 +50,8 @@ Parameters:
 **Example:**
 
     {:type :ldap
-     :server "ldap.uni-erlangen.de"
-     :basedn "o=Universitaet Erlangen-Nuernberg,c=DE"
+     :server "ldap://ldap.virginia.edu"
+     :basedn "o=University of Virginia,c=US"
      :prefix "0"}
 
 ### MySQLHandler
@@ -116,7 +126,7 @@ Format for voicemail-voiceboxes.conf is:
 
 # Contact
 
-http://www.bevuta.com/ - bevuta - professionelle IT-Lösungen
+http://www.bevuta.com/ - bevuta IT GmbH
 
 If you have written your own handler modules, found bugs, have an
 improvement suggestion, don't hesitate to contact us ;)
@@ -124,6 +134,7 @@ improvement suggestion, don't hesitate to contact us ;)
 # Copyright
 
 Copyright (c) 2015, bevuta IT GmbH
+
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

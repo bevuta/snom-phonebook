@@ -178,6 +178,7 @@
 (defn -main
   "Starts a http-server on the configured port."
   [& args]
+  (print (str "server started on port " (:port configuration)))
   (http-server/run
     (wrap-defaults app-routes site-defaults)
     :port (:port configuration)))

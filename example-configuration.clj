@@ -5,8 +5,8 @@
  [
   ;; ldap
   {:type :ldap
-   :server "ldap.uni-erlangen.de"
-   :basedn "o=Universitaet Erlangen-Nuernberg,c=DE"
+   :server "ldap://ldap.virginia.edu"
+   :basedn "o=University of Virginia,c=US"
    :prefix "0"}
   ;; mysql
   {:type :mysql
