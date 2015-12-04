@@ -151,16 +151,16 @@
      (GET "/" [] (indent-str (->snom-ip-phone-menu strings/phonebook menu-items)))
      (context
       "/get" []
-      (GET "/A-C" [] (multi-search-partial ["A" "B" "C"]))
-      (GET "/D-F" [] (multi-search-partial ["D" "E" "F"]))
-      (GET "/G-I" [] (multi-search-partial ["G" "H" "I"]))
-      (GET "/J-L" [] (multi-search-partial ["J" "K" "L"]))
-      (GET "/M-O" [] (multi-search-partial ["M" "N" "O"]))
-      (GET "/P-S" [] (multi-search-partial ["P" "Q" "R" "S"]))
-      (GET "/T-V" [] (multi-search-partial ["T" "U" "V"]))
-      (GET "/W-Z" [] (multi-search-partial ["W" "X" "Y" "Z"]))
-      (GET "/0-9" [] (multi-search-partial ["0" "1" "2" "3" "4" "5" "6" "7" "8" "9"]))
-      (GET "/umlauts" [] (multi-search-partial ["Ä" "Ö" "Ü" "ä" "ö" "ü"])))
+      (GET "/A-C" [] (multi-search-partial ["^A" "^B" "^C"]))
+      (GET "/D-F" [] (multi-search-partial ["^D" "^E" "^F"]))
+      (GET "/G-I" [] (multi-search-partial ["^G" "^H" "^I"]))
+      (GET "/J-L" [] (multi-search-partial ["^J" "^K" "^L"]))
+      (GET "/M-O" [] (multi-search-partial ["^M" "^N" "^O"]))
+      (GET "/P-S" [] (multi-search-partial ["^P" "^Q" "^R" "^S"]))
+      (GET "/T-V" [] (multi-search-partial ["^T" "^U" "^V"]))
+      (GET "/W-Z" [] (multi-search-partial ["^W" "^X" "^Y" "^Z"]))
+      (GET "/0-9" [] (multi-search-partial ["^0" "^1" "^2" "^3" "^4" "^5" "^6" "^7" "^8" "^9"]))
+      (GET "/umlauts" [] (multi-search-partial ["^Ä" "^Ö" "^Ü" "^ä" "^ö" "^ü"])))
      (GET "/search" request
           (let [query-params (:query-params request)]
             (if (empty? query-params)
