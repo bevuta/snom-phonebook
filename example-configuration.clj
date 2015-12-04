@@ -1,4 +1,5 @@
 {:country-prefix "+49"
+ :host "localhost"
  :port 3000
  :base-url "http://web-server-ip-here:3000/"
  :handlers
