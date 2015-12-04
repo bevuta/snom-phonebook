@@ -14,17 +14,16 @@ running leiningen installation. For information about running clojure
 projects, see https://github.com/technomancy/leiningen
 
 Copy the example-configuration.clj and make it fitting your needs.
-  cp example-configuration.clj configuration.clj
-  $EDITOR configuration.clj
 
-Run with
-`lein run`
-if you have installed leiningen.
+    cp example-configuration.clj configuration.clj
+    $EDITOR configuration.clj
+
+Run with `lein run` if you have installed leiningen.
 
 If you don't want to care about leiningen and clojure, use the
 provided jar and execute it with
 
-`java -jar snom-phonebook-0.1.0-SNAPSHOT-standalone.jar`
+    java -jar snom-phonebook-0.1.0-SNAPSHOT-standalone.jar
 
 You need to have a configuration.clj staying in the directory from
 where you called `java -jar ...`.
