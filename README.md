@@ -30,7 +30,7 @@ where you called `java -jar ...`.
 
 To configure your snom phone to make it use of this application, see
 http://wiki.snom.com/Category:HowTo:Minibrowser#Keypad-_Triggered and
-put in the input field whatever you putted in your configuration as
+put in the input field whatever you've put in your configuration as
 *base-url*.
 
 ## Handlers
