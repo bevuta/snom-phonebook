@@ -123,6 +123,16 @@ Format for voicemail-voiceboxes.conf is:
     101 => 1234,User A,user-a@example.com
     102 => 1234,User B,user-b@example.com,user-b-notify@example.com
 
+## Troubleshooting ##
+
+- Make sure the `:host` parameter is set to a publicly accessible IP
+  address or host name, otherwise the snom phone won't be able to
+  access the server
+- An error 500 can be caused by a number of things, including the
+  wrong `:base-url` parameter
+- The snom Web UI comes with a log which can help you finding error
+  sources
+
 # Contact
 
 http://www.bevuta.com/ - bevuta IT GmbH
