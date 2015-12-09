@@ -26,11 +26,11 @@
   least) the name and number from every line in ':file', a
   'name-field', which is an integer and describes the 'name-field'th
   extracted field and similar for 'number-field' as for 'name-field'."
-  [configuration-map needle]
+  [configuration-map needle anchor?]
   (let [{:keys [regular-expression
                 name-field
                 number-field]} configuration-map
-        needle-pattern (re-pattern (str "(?i)" needle))
+        needle-pattern (re-pattern (str (if anchor? "(?i)^" "(?i)") needle))
         extractor-fn (partial extract-name-and-number-map
                               regular-expression
                               needle-pattern

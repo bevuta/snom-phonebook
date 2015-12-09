@@ -84,14 +84,14 @@
   and a 'query'-string, this function returns a name/phone-number map
   for the results which were found.  For an example of
   'configuration-map', see the example-configuration."
-  [configuration-map query]
+  [configuration-map query anchor?]
   (let [{:keys [database-configuration
                 table
                 name-elements
                 search-elements
                 phone-element
                 format]} configuration-map
-                query (str query "%")]
+                query (str (if anchor? "" "%") query "%")]
     (format-results
      format
      phone-element

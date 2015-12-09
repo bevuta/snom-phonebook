@@ -39,7 +39,7 @@
   for entries having a cn starting with 'needle' and at least one
   telephoneNumber. Returns a map with the found cns as keys and the
   first found telephoneNumber of each entry as values."
-  [configuration-map needle]
+  [configuration-map needle anchor?]
   (let [{ldap-server :server
          search-base :basedn} configuration-map
          search-controls (SearchControls.)
@@ -54,7 +54,8 @@
     (let [results (.search
                    context
                    search-base
-                   (str "(&" "(cn=" needle "*" ")" "(telephoneNumber=*))")
+                   (str "(&" "(cn=" (if anchor? "" "*") needle "*" ")"
+                        "(telephoneNumber=*))")
                    search-controls)
           results (and results (enumeration-seq results))]
       ;; reduce the objects which were returned from java/ldap to a

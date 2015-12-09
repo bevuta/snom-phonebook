@@ -27,6 +27,7 @@
 (def ^:private menu-items
   (let [base-url (:base-url configuration)]
    (for [[range url-part] [[strings/search "search"]
+                           [strings/quick-search "quick-search"]
                            ["A-C" "get/A-C"]
                            ["D-F" "get/D-F"]
                            ["G-I" "get/G-I"]
@@ -67,7 +68,7 @@
     [:Text {} text]]))
 
 (defn ^:private snom-ip-phone-input
-  ([url query-string-parameter title display-name]
+  ([url query-string-parameter title display-name input-flag]
    (sexp-as-element
     [:SnomIPPhoneInput
      [:Title title]
@@ -77,7 +78,7 @@
       [:DisplayName display-name]
       [:QueryStringParam query-string-parameter]
       [:DefaultValue]
-      [:InputFlags "a"]]])))
+      [:InputFlags input-flag]]])))
 
 (defn ^:private prefix-phonenumber
   "If 'phonenumber' starts with a plus, the result is
@@ -89,34 +90,53 @@
                   (apply str (cons "00" (rest s)))
                   (apply str s)))))
 
-(defn ^:private search [query]
+(defn ^:private search [query anchor?]
   "Searches the string 'query' in each configured handle. Returns
   things like this:
   [[name number] [name2 number-for-name2]]"
-  (let [handlers (:handlers configuration)]
-    (->> handlers
-      (mapcat (fn [handler]
-                (let [type (:type handler)
-                      results (case type
-                                :ldap (ldap/search handler query)
-                                :mysql (mysql/search handler query)
-                                :flatfile (flatfile/search handler query)
-                                {})
-                      prefix (:prefix handler)]
-                  (if prefix
-                    (for [[k v] results]
-                      [k (prefix-phonenumber v prefix)])
-                    results))))
-      vec)))
+  (mapcat
+   (fn [handler]
+     (let [type (:type handler)
+           results (case type
+                     :ldap (ldap/search handler query anchor?)
+                     :mysql (mysql/search handler query anchor?)
+                     :flatfile (flatfile/search handler query anchor?)
+                     {})
+           prefix (:prefix handler)]
+       (if prefix
+         (for [[k v] results]
+           [k (prefix-phonenumber v prefix)])
+         results)))
+   (:handlers configuration)))
 
-(defn ^:private multisearch
-  "Acts like search, with the difference that you can pass multiple
-  query-strings as vector and the results will be merged into one. The
-  result looks like the result of 'search'."
-  [queries]
-  (->> queries
-    (map #(search %))
-    (reduce concat)))
+(defn ^:private substring-search [query]
+  (search query false))
+
+(defn ^:private range-search [chars]
+  (mapcat #(search (str %) true) chars))
+
+(def ^:private t9
+  {\2 "ABC"
+   \3 "DEF"
+   \4 "GHI"
+   \5 "JKL"
+   \6 "MNO"
+   \7 "PQRS"
+   \8 "TUV"
+   \9 "WXYZ"})
+
+(defn ^:private t9->re [input]
+  (reduce (fn [s x] (if-let [re (get t9 x)]
+                      (str s "[" re "]")
+                      (str s ".")))
+          "(?i)" input))
+
+(defn ^:private quick-search [string]
+  (let [chars (get t9 (first string))
+        candidates (range-search (seq chars))
+        pat (t9->re string)]
+    (filter (fn [[name _]] (re-find (re-pattern pat) name))
+            candidates)))
 
 (defn ^:private strip-non-numeric
   "Kicks every nom-number-character out of 'phonenumber' and then
@@ -148,29 +168,37 @@
 
 (def ^:private app-routes
   (let [country-prefix (:country-prefix configuration)
-        multi-search-partial (partial #(wrap-search-results country-prefix (multisearch %)))]
+        range-search-partial #(wrap-search-results country-prefix (range-search %))]
     (routes
      (GET "/" [] (indent-str (->snom-ip-phone-menu strings/phonebook menu-items)))
      (context
       "/get" []
-      (GET "/A-C" [] (multi-search-partial ["^A" "^B" "^C"]))
-      (GET "/D-F" [] (multi-search-partial ["^D" "^E" "^F"]))
-      (GET "/G-I" [] (multi-search-partial ["^G" "^H" "^I"]))
-      (GET "/J-L" [] (multi-search-partial ["^J" "^K" "^L"]))
-      (GET "/M-O" [] (multi-search-partial ["^M" "^N" "^O"]))
-      (GET "/P-S" [] (multi-search-partial ["^P" "^Q" "^R" "^S"]))
-      (GET "/T-V" [] (multi-search-partial ["^T" "^U" "^V"]))
-      (GET "/W-Z" [] (multi-search-partial ["^W" "^X" "^Y" "^Z"]))
-      (GET "/0-9" [] (multi-search-partial ["^0" "^1" "^2" "^3" "^4" "^5" "^6" "^7" "^8" "^9"]))
-      (GET "/umlauts" [] (multi-search-partial ["^Ä" "^Ö" "^Ü" "^ä" "^ö" "^ü"])))
+      (GET "/A-C" [] (range-search-partial [\A \B \C]))
+      (GET "/D-F" [] (range-search-partial [\D \E \F]))
+      (GET "/G-I" [] (range-search-partial [\G \H \I]))
+      (GET "/J-L" [] (range-search-partial [\J \K \L]))
+      (GET "/M-O" [] (range-search-partial [\M \N \O]))
+      (GET "/P-S" [] (range-search-partial [\P \Q \R \S]))
+      (GET "/T-V" [] (range-search-partial [\T \U \V]))
+      (GET "/W-Z" [] (range-search-partial [\W \X \Y \Z]))
+      (GET "/0-9" [] (range-search-partial [\0 \1 \2 \3 \4 \5 \6 \7 \8 \9]))
+      (GET "/umlauts" [] (range-search-partial [\Ä \Ö \Ü \ä \ö \ü])))
      (GET "/search" request
           (let [query-params (:query-params request)]
             (if (empty? query-params)
-              (emit-str (snom-ip-phone-input (str (:base-url configuration) "search") "search" strings/search strings/search))
+              (emit-str (snom-ip-phone-input (str (:base-url configuration) "search")
+                                             "search" strings/search strings/search "a"))
               (when-let [query (get query-params "search")]
                 (let [query (s/replace query #"[*]" (s/re-quote-replacement (str "\\" "*")))
-                      results (search query)]
+                      results (substring-search query)]
                   (wrap-search-results country-prefix results))))))
+     (GET "/quick-search" request
+          (let [query-params (:query-params request)]
+            (if (empty? query-params)
+              (emit-str (snom-ip-phone-input (str (:base-url configuration) "quick-search")
+                                             "search" strings/quick-search strings/quick-search "t"))
+              (when-let [query (get query-params "search")]
+                (wrap-search-results country-prefix (quick-search query))))))
      (GET "/help" [] (emit-str
                       (->snom-ip-phone-text
                        strings/phonebook

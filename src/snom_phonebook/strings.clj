@@ -20,5 +20,8 @@
 (def search
   "Suche")
 
+(def quick-search
+  "Schnellsuche")
+
 (def not-found
   "Not Found")
