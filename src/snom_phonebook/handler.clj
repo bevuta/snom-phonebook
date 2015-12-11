@@ -140,9 +140,11 @@
              [name (strip-non-numeric
                     phonenumber
                     countryprefix)]))
+      (into {})
+      vec
       (sort-by first)
       (->snom-ip-phone-directory strings/phonebook "")
-      (indent-str))))
+      indent-str)))
 
 (def ^:private app-routes
   (let [country-prefix (:country-prefix configuration)
