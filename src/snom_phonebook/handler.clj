@@ -112,8 +112,11 @@
 (defn ^:private substring-search [query]
   (search query false))
 
-(defn ^:private range-search [chars]
-  (mapcat #(search (str %) true) chars))
+(defn ^:private range-search
+  ([chars]
+   (range-search chars true))
+  ([chars anchor?]
+   (mapcat #(search (str %) anchor?) chars)))
 
 (def ^:private t9
   {\2 "ABC"
@@ -133,7 +136,7 @@
 
 (defn ^:private quick-search [string]
   (let [chars (get t9 (first string))
-        candidates (range-search (seq chars))
+        candidates (range-search (seq chars) false)
         pat (t9->re string)]
     (filter (fn [[name _]] (re-find (re-pattern pat) name))
             candidates)))
